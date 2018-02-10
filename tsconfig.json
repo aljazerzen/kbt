@@ -4,7 +4,7 @@
     "lib": ["ES2016"],
     "target": "es5",
     "sourceMap": true,
-    "out": "dist"
+    "outDir": "dist"
   },
   "exclude": [
     "node_modules"
