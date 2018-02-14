@@ -50,9 +50,9 @@ export async function analyze() {
 
   let totalVol = sum(transactions, 'amount');
 
-  let minimums = firstToReachVolume(transactions, totalVol * 0.1);
+  let minimums = firstToReachVolume(transactions, totalVol * 0.25);
   transactions.reverse();
-  let maximums = firstToReachVolume(transactions, totalVol * 0.1);
+  let maximums = firstToReachVolume(transactions, totalVol * 0.25);
 
   sort(minimums, 'date');
   sort(maximums, 'date');
