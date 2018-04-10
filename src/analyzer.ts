@@ -1,6 +1,6 @@
 import { linear, polynomial } from 'regression';
 import { Transaction } from './transaction';
-import { BitstampService } from './bitstamp.service';
+import { BitstampService } from './bitstamp/bitstamp.service';
 import { MailService } from './mail.service';
 import { render } from './render';
 
@@ -41,6 +41,7 @@ function max(trans: Transaction[], field) {
 export async function analyze() {
 
   // let transactions = await new FileService().loadTransactions();
+  let bitstamp = new BitstampService();
   let transactions = await new BitstampService().transactionsDay();
 
   const regressionPoly = polynomial(toPoints(transactions), { precision: 50, order: 5 });
@@ -59,9 +60,7 @@ export async function analyze() {
   let regMin = polynomial(toPoints(minimums), { precision: 50, order: 5 });
   let regMax = polynomial(toPoints(maximums), { precision: 50, order: 5 });
 
-  let bitstamp = new BitstampService();
   let ticker = await bitstamp.ticker();
-
 
   console.log('Ask: ', ticker.ask, ' Predicted min: ', regMin.predict(+ticker.timestamp)[1]);
   if (+ticker.ask < regMin.predict(+ticker.timestamp)[1]) {
@@ -70,7 +69,7 @@ export async function analyze() {
   }
 
   console.log('Bid: ', ticker.bid, ' Predicted max: ', regMax.predict(+ticker.timestamp)[1]);
-  if (+ticker.bid > regMax.predict(+ticker.timestamp)[1]) {
+  if (regMax.predict(+ticker.timestamp)[1] < +ticker.bid) {
     console.log(`Sell at ${ticker.bid} BTC/ETH`);
     await MailService.send(`Sell at ${ticker.bid} BTC/ETH`);
   }
